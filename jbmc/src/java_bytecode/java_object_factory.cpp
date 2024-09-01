@@ -1143,17 +1143,16 @@ static void allocate_nondet_length_array(
   const allocate_local_symbolt &allocate_local_symbol,
   const source_locationt &location)
 {
-  const auto &length_sym_expr = generate_nondet_int(
-    from_integer(0, java_int_type()),
-    max_length_expr,
+  const auto &length_sym_expr = gen_positive_nondet_int(
     "nondet_array_length",
+    java_int_type(),
     location,
     allocate_local_symbol,
     assignments);
 
   side_effect_exprt java_new_array(ID_java_new_array, lhs.type(), location);
   java_new_array.copy_to_operands(length_sym_expr);
-  java_new_array.set(ID_length_upper_bound, max_length_expr);
+  //java_new_array.set(ID_length_upper_bound, max_length_expr);
   to_type_with_subtype(java_new_array.type())
     .subtype()
     .set(ID_element_type, element_type);

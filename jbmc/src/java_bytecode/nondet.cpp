@@ -88,6 +88,34 @@ symbol_exprt generate_nondet_int(
     instructions);
 }
 
+symbol_exprt gen_positive_nondet_int(
+  const std::string &basename_prefix,
+  const typet &int_type,
+  const source_locationt &source_location,
+  const allocate_local_symbolt &alocate_local_symbol,
+  code_blockt &instructions)
+{
+  const exprt min_value_expr = from_integer(0, int_type);
+
+  // Declare a symbol for the non deterministic integer.
+  const symbol_exprt &nondet_symbol =
+    alocate_local_symbol(int_type, basename_prefix);
+  instructions.add(code_frontend_declt(nondet_symbol));
+
+  // Assign the symbol any non deterministic integer value.
+  //   int_type name_prefix::nondet_int = NONDET(int_type)
+  instructions.add(code_frontend_assignt(
+    nondet_symbol, side_effect_expr_nondett(int_type, source_location)));
+
+  // Constrain the non deterministic integer with a lower bound of `min_value`.
+  //   ASSUME(name_prefix::nondet_int >= min_value)
+  instructions.add(
+    code_assumet(binary_predicate_exprt(nondet_symbol, ID_ge, min_value_expr)));
+
+  return nondet_symbol;
+}
+
+
 code_blockt generate_nondet_switch(
   const irep_idt &name_prefix,
   const alternate_casest &switch_cases,

@@ -79,6 +79,28 @@ symbol_exprt generate_nondet_int(
   allocate_objectst &allocate_objects,
   code_blockt &instructions);
 
+/// Gets a fresh nondet choice in range >= 0. GOTO generated
+/// resembles:
+/// ```
+/// int_type name_prefix::nondet_int = NONDET(int_type)
+/// ASSUME(name_prefix::nondet_int >= 0)
+/// ```
+/// \param basename_prefix: Basename prefix for the fresh symbol name generated.
+/// \param int_type: The type of the int used to non-deterministically choose
+///   one of the switch cases.
+/// \param source_location: The location to mark the generated int with.
+/// \param allocate_local_symbol: Handles allocation of new objects.
+/// \param [out] instructions: Output instructions are written to
+///   'instructions'. These declare, nondet-initialise and range-constrain (with
+///   assume statements) a fresh integer.
+/// \return Returns a symbol expression for the resulting integer.
+symbol_exprt gen_positive_nondet_int(
+  const std::string &basename_prefix,
+  const typet &int_type,
+  const source_locationt &source_location,
+  const allocate_local_symbolt &alocate_local_symbol,
+  code_blockt &instructions);
+
 typedef std::vector<codet> alternate_casest;
 
 /// Pick nondeterministically between imperative actions 'switch_cases'.
